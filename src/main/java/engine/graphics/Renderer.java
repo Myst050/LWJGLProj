@@ -8,6 +8,7 @@ import java.nio.FloatBuffer;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Renderer {
@@ -15,13 +16,16 @@ public class Renderer {
     private int width;
     private int height;
     private String title;
+    int uniformLocation;
 
     private String vertexSrc = "#version 330 core\n" +
             "\n" +
             "layout (location = 0) in vec3 aPos;\n" +
             "\n" +
+            "uniform mat4 u_Model;\n" +
+            "\n" +
             "void main() {\n" +
-            "    gl_Position = vec4(aPos, 1.0);\n" +
+            "    gl_Position = u_Model * vec4(aPos, 1.0);\n" +
             "}";
     private String fragmentSrc = "#version 330 core\n" +
             "\n" +
@@ -79,9 +83,13 @@ public class Renderer {
 
         shader = new Shader(vertexSrc, fragmentSrc);
         shader.compile();
+
+        uniformLocation = glGetUniformLocation(shader.returnProgramID(), "u_Model");
     }
 
     public void loop(){
+
+        float Xpos = 0.0f;
 
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -89,7 +97,14 @@ public class Renderer {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             shader.use();
 
+            Xpos += 0.005f;
+            if (Xpos > 1.0f) Xpos = -1.0f;
+
+            triangle.getCurrentMatrix().identity().translate(Xpos, 0.0f, 0.0f);
+
             triangle.render();
+
+            triangle.uploadMatrix(uniformLocation);
 
             shader.detach();
 

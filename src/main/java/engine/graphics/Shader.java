@@ -59,4 +59,8 @@ public class Shader {
             }
         }
     }
+
+    public int returnProgramID(){
+        return shaderProgram;
+    }
 }
