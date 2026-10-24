@@ -2,6 +2,7 @@ package engine.graphics;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import org.joml.*;
 
 import java.nio.FloatBuffer;
 
@@ -16,16 +17,20 @@ public class Renderer {
     private int width;
     private int height;
     private String title;
-    int uniformLocation;
+    private Mesh triangle;
+
+    Camera camera = new Camera(new Vector3f(0.0f, 0.0f, 0.0f));
 
     private String vertexSrc = "#version 330 core\n" +
             "\n" +
             "layout (location = 0) in vec3 aPos;\n" +
             "\n" +
-            "uniform mat4 u_Model;\n" +
+            "\n" +
+            "uniform mat4 uProjection;\n" +
+            "uniform mat4 uView;\n" +
             "\n" +
             "void main() {\n" +
-            "    gl_Position = u_Model * vec4(aPos, 1.0);\n" +
+            "    gl_Position = uProjection * uView * vec4(aPos, 1.0);\n" +
             "}";
     private String fragmentSrc = "#version 330 core\n" +
             "\n" +
@@ -36,7 +41,6 @@ public class Renderer {
             "}";
 
     Shader shader;
-    Mesh triangle;
 
     public Renderer(int w, int h, String t){
         this.width = w;
@@ -70,21 +74,22 @@ public class Renderer {
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
         glfwShowWindow(window);
-
         GL.createCapabilities();
 
+        glfwSetKeyCallback(window, KeyListener.get()::setKeyCallback);
+
+        glViewport(0, 0, width, height);
+
         float[] vertices = {
-                0.0f,  0.5f, 0.0f, // Top
-                -0.5f, -0.5f, 0.0f, // Bottom Left
-                0.5f, -0.5f, 0.0f  // Bottom Right
+                400.0f, 500.0f, 0.0f, // Top (Center-ish, higher up)
+                300.0f, 300.0f, 0.0f, // Bottom Left
+                500.0f, 300.0f, 0.0f  // Bottom Right
         };
 
         triangle = new Mesh(vertices);
 
         shader = new Shader(vertexSrc, fragmentSrc);
         shader.compile();
-
-        uniformLocation = glGetUniformLocation(shader.returnProgramID(), "u_Model");
     }
 
     public void loop(){
@@ -97,14 +102,20 @@ public class Renderer {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             shader.use();
 
-            Xpos += 0.005f;
-            if (Xpos > 1.0f) Xpos = -1.0f;
+            shader.uploadMat4f("uProjection", camera.getProjectionMatrix());
+            shader.uploadMat4f("uView", camera.getViewMatrix());
 
-            triangle.getCurrentMatrix().identity().translate(Xpos, 0.0f, 0.0f);
+            if(KeyListener.isKeyPressed(GLFW_KEY_W)){
+                camera.getPosition().y += -1.0f;
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
+                camera.getPosition().y += 1.0f;
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
+                camera.getPosition().x += 1.0f;
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
+                camera.getPosition().x += -1.0f;
+            }
 
             triangle.render();
-
-            triangle.uploadMatrix(uniformLocation);
 
             shader.detach();
 

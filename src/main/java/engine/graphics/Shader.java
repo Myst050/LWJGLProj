@@ -1,12 +1,19 @@
 package engine.graphics;
 
 
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
+
 import static org.lwjgl.opengl.GL20.*;
 
 public class Shader {
     private int shaderProgram;
     private String vertexSrc;
     private String fragmentSrc;
+
+    private FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
     public Shader(String vertexSrc, String fragmentSrc){
         this.vertexSrc = vertexSrc;
@@ -62,5 +69,16 @@ public class Shader {
 
     public int returnProgramID(){
         return shaderProgram;
+    }
+
+    public void uploadMat4f(String uni, Matrix4f mat){
+        int loc = glGetUniformLocation(shaderProgram, uni);
+
+        if(loc == -1){
+            return;
+        }
+
+        mat.get(matrixBuffer);
+        glUniformMatrix4fv(loc, false, matrixBuffer);
     }
 }
