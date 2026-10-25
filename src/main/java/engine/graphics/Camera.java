@@ -16,13 +16,14 @@ public class Camera {
 
     public void adjustProjection(){
         this.projectionMatrix.identity();
-        projectionMatrix.ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.0f, 100.0f);
+        projectionMatrix.ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 100.0f);
     }
 
     public Matrix4f getViewMatrix(){
         Vector3f cameraFront = new Vector3f(0.0f, 0.0f, 1.0f);
         Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
 
+        viewMatrix.identity();
         viewMatrix.translate(-position.x, -position.y, 0.0f);
 
         return this.viewMatrix;

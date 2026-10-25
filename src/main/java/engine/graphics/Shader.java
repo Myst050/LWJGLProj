@@ -75,10 +75,17 @@ public class Shader {
         int loc = glGetUniformLocation(shaderProgram, uni);
 
         if(loc == -1){
+            System.out.println("UNIFORM LOCATION ERROR *** Error at Shader.java line 78");
             return;
         }
 
         mat.get(matrixBuffer);
         glUniformMatrix4fv(loc, false, matrixBuffer);
+    }
+
+    public void delete(){
+        if(shaderProgram != 0){
+            glDeleteProgram(shaderProgram);
+        }
     }
 }

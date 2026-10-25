@@ -12,27 +12,34 @@ import java.nio.FloatBuffer;
 public class Mesh {
     private VertexBufferObject vbo;
     private VertexArrayObject vao;
+    private ElementBufferObject ebo;
     private int vertexCount;
 
-    public Mesh(float[] vertices){
+    public Mesh(float[] vertices, int[] indices){
         this.vertexCount = vertices.length / 3;
+
+        vao = new VertexArrayObject();
+        vao.bind();
 
         vbo = new VertexBufferObject();
         vbo.bind();
         vbo.uploadData(vertices);
 
-        vao = new VertexArrayObject();
-        vao.bind();
+        ebo = new ElementBufferObject();
+        ebo.bind();
+        ebo.uploadData(indices);
+
         vao.linkAttribute(0, 3, 3 * Float.BYTES, 0L);
 
         vao.unbind();
-        vbo.bind();
+        vbo.unbind();
+        ebo.unbind();
     }
 
     public void render(){
         vao.bind();
 
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        glDrawElements(GL_TRIANGLES, ebo.returnCount(), GL_UNSIGNED_INT, 0);
 
         vao.unbind();
     }
@@ -40,5 +47,6 @@ public class Mesh {
     public void delete(){
         vao.delete();
         vbo.delete();
+        ebo.delete();
     }
 }
