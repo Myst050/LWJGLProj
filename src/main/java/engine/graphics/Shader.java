@@ -83,6 +83,17 @@ public class Shader {
         glUniformMatrix4fv(loc, false, matrixBuffer);
     }
 
+    public void uploadInt(String uni, int value){
+        int loc = glGetUniformLocation(shaderProgram, uni);
+
+        if(loc != -1){
+            glUniform1i(loc, value);
+        } else {
+            System.out.println("ERROR");
+            return;
+        }
+    }
+
     public void delete(){
         if(shaderProgram != 0){
             glDeleteProgram(shaderProgram);

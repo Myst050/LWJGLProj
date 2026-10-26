@@ -29,7 +29,9 @@ public class Mesh {
         ebo.bind();
         ebo.uploadData(indices);
 
-        vao.linkAttribute(0, 3, 3 * Float.BYTES, 0L);
+        int stride = 5 * Float.BYTES;
+
+        vao.linkAttribute(0, 3, stride, 0L);
 
         vao.unbind();
         vbo.unbind();

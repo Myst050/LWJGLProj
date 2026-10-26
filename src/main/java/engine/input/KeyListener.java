@@ -1,4 +1,4 @@
-package engine.graphics;
+package engine.input;
 
 import static org.lwjgl.glfw.GLFW.*;
 
