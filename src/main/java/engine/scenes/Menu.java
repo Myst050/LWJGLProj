@@ -2,7 +2,6 @@ package engine.scenes;
 
 import engine.graphics.*;
 import engine.input.KeyListener;
-import engine.util.ShaderSources;
 import org.joml.*;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -14,9 +13,9 @@ public class Menu extends Scene{
 
     @Override
     public void init() {
-        shader = new Shader(ShaderSources.getSource("vertex"), ShaderSources.getSource("fragment"));
+        shader = new Shader("resources/vertex.glsl", "resources/fragment.glsl");
         camera = new Camera(new Vector3f(0.0f, 0.0f, 3.0f));
-        dirt = new Texture("C:/dev/LWJGLProj/resources/textures/dirt.png");
+        dirt = new Texture("resources/textures/dirt.png");
 
         shader.compile();
 

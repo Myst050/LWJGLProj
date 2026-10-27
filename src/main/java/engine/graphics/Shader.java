@@ -6,6 +6,10 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import static org.lwjgl.opengl.GL20.*;
 
 public class Shader {
@@ -15,9 +19,13 @@ public class Shader {
 
     private FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
-    public Shader(String vertexSrc, String fragmentSrc){
-        this.vertexSrc = vertexSrc;
-        this.fragmentSrc = fragmentSrc;
+    public Shader(String vertexPath, String fragmentPath){
+        try{
+            this.vertexSrc = Files.readString(Paths.get(vertexPath));
+            this.fragmentSrc = Files.readString(Paths.get(fragmentPath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void compile(){

@@ -85,8 +85,6 @@ public class Renderer {
             dt = endTime - beginTime;
             beginTime = endTime;
 
-            System.out.println("Mouse pos: " + MouseListener.getDx() + ", " + MouseListener.getDy());
-
             glfwSwapBuffers(window);
 
             MouseListener.endFrame();
